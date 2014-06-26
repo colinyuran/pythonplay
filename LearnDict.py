@@ -44,4 +44,7 @@ if request == 'a' : key = 'age'
 
 if name in people:
 	print "%s's %s is %s." % (name,labels[key],people[name][key])
-	
+
+
+phonebook = {'cat':'1234', 'dog':'2345'}
+print 'cat\'s phone number is %(cat)s.' % phonebook
