@@ -20,7 +20,7 @@ def plotNode(nodeTxt, centerPt, parentPt, nodeType):
 def plotMidText(cntrPt, parentPt, txtString):
     xMid = (parentPt[0] - cntrPt[0]) / 2.0 + cntrPt[0]
     yMid = (parentPt[1] - cntrPt[1]) / 2.0 + cntrPt[1]
-    createPlot.ax1.text(xMid, yMid, txtString, va="center", ha="center", rotation=30)
+    createPlot.ax1.text(xMid, yMid, txtString)
 
 
 def plotTree(myTree, parentPt, nodeTxt):
@@ -42,7 +42,9 @@ def plotTree(myTree, parentPt, nodeTxt):
             plotNode(secondDict[key], (plotTree.xOff, plotTree.yOff), cntrPt, leafNode)
             plotMidText((plotTree.xOff, plotTree.yOff), cntrPt, str(key))
         
-        plotTree.yOff = plotTree.yOff + 1.0 / plotTree.totalD
+    plotTree.yOff = plotTree.yOff + 1.0 / plotTree.totalD
+    
+    return None
 
 
 def createPlot(inTree):
@@ -57,10 +59,7 @@ def createPlot(inTree):
     plotTree.yOff = 1.0
     plotTree(inTree, (0.5,1.0), '')
     plt.show()
-
-    # plotNode('Decision Node', (0.5,0.1), (0.1,0.5), decisionNode)
-    # plotNode('Leaf Node', (0.8,0.1), (0.3,0.8), leafNode)
-    # plt.show()
+    return None
 
 
 def getNumLeafs(myTree):
@@ -85,8 +84,8 @@ def getTreeDepth(myTree):
         else:
             thisDepth = 1
     
-    if thisDepth > maxDepth:
-        maxDepth = thisDepth
+        if thisDepth > maxDepth:
+            maxDepth = thisDepth
 
     return maxDepth
 
@@ -95,12 +94,16 @@ def getTreeDepth(myTree):
 
 def retrieveTree(i):
     listOfTrees = [ {'no surfacing': {0: 'no', 1: {'flippers' : {0: 'no',1: 'yes'}}}},
-                    {'no surfacing': {0: 'no', 1: {'flippers' : {0: {'head': {0:'no', 1:'yes'}, 1:'no'}}}}}]
+                    {'no surfacing': {0: 'no', 1: {'flippers' : {0: {'head': {0:'no', 1:'yes'}} , 1:'no' }}}}]
     return listOfTrees[i]
 
 
 if __name__ == '__main__':
-    myTree = retrieveTree(0)
+    myTree = retrieveTree(1)
+    myTree['no surfacing'][2] = 'unknown'
+    myTree['no surfacing'][3] = 'maybe'
+    myTree['no surfacing'][4] = {'tail': {0:'no', 1:'yes', 2 : {'skin':{0:'no', 1:'yes', 2:{'color':{0:'no', 1:{'area':{0:'no',1:'yes'}},2:'yes'}} } } }}
+    print(myTree)
     print(getNumLeafs(myTree))
     print(getTreeDepth(myTree))
     createPlot(myTree)
