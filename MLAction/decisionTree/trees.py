@@ -1,5 +1,7 @@
 from math import log
 import operator
+import treePlotter
+import pickle
 
 def createDataSet():
     dataSet = [[1,1,'yes'], [1,1,'yes'], [1,0,'no'], [0,1,'no'], [0,1,'no']]
@@ -96,6 +98,31 @@ def createTree(dataSet, labels):
     return myTree
 
 
+def  classify(inputTree, featLabels, testVec):
+    firstStr = list(inputTree.keys())[0]
+    secondDict = inputTree[firstStr]
+    featIndex = featLabels.index(firstStr)
+
+    for key in secondDict.keys():
+        if testVec[featIndex] == key:
+            if type(secondDict[key]).__name__ == 'dict':
+                classLabel = classify(secondDict[key], featLabels, testVec)
+            else:
+                classLabel = secondDict[key]
+    
+    return classLabel
+
+def storeTree(inputTree, fileName):
+    fw = open(fileName, 'wb')
+    pickle.dump(inputTree, fw)
+    fw.close()
+
+def grabTree(fileName):
+    fr = open(fileName,'rb')
+    return pickle.load(fr)
+
+
+
 if (__name__ == '__main__'):
     # myDat, labels = createDataSet()
     # myDat[0][-1] = 'maybe'
@@ -116,8 +143,28 @@ if (__name__ == '__main__'):
     # bestFeature = chooseBestFeatureToSplit(myDat)
     # print(bestFeature)
 
-    myDat, labels = createDataSet()
-    print(myDat)
-    myTree = createTree(myDat, labels)
-    print(myTree)
+    # myDat, labels = createDataSet()
+    # print(myDat)
+    # myTree = createTree(myDat, labels)
+    # print(myTree)
 
+    # myDat, labels = createDataSet()
+    # print(myDat)
+    # print(labels)
+    # myTree = treePlotter.retrieveTree(0)
+    # print(myTree)
+    # r = classify(myTree, labels, [1,0])
+    # print(r)
+    # r = classify(myTree, labels, [1,1])
+    # print(r)
+
+    fr = open('lenses.txt')
+    lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+    lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+    
+    lensesTree = createTree(lenses, lensesLabels)
+    print(lensesTree)
+    treePlotter.createPlot(lensesTree)
+    storeTree(lensesTree, 'treeModel')
+    loadedTree = grabTree('treeModel')
+    treePlotter.createPlot(loadedTree)
