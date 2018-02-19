@@ -38,8 +38,8 @@ def bagOfWords2VecMN(vocabList, inputSet):
     for word in inputSet:
         if word in vocabList:
             returnVec[vocabList.index(word)] += 1
-        else:
-            print('the word:{0} is not in my Vocabulary!'.format(word))
+        # else:
+        #     print('the word:{0} is not in my Vocabulary!'.format(word))
     return returnVec
 
 
@@ -227,6 +227,33 @@ def testAd():
     vocabList, pSF, pNY = localWords(ny, sf)
 
 
+def getTopWords():
+    import feedparser
+    
+    ny = feedparser.parse('https://newyork.craigslist.org/stp/index.rss')
+    sf = feedparser.parse('https://sfbay.craigslist.org/stp/index.rss')
+    vocabList, p0V, p1V = localWords(ny, sf)
+
+    topNY = []
+    topSF = []
+
+    for i in range(len(p0V)):
+        if p0V[i] > -6.0:
+            topSF.append((vocabList[i], p0V[i]))
+        if p1V[i] > -6.0:
+            topNY.append((vocabList[i], p1V[i]))
+    
+    sortedSF = sorted(topSF, key = lambda pair: pair[1], reverse=True)
+    print('SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**')
+    for item in sortedSF:
+        print(item[0])
+
+    sortedNY = sorted(topNY, key = lambda pair: pair[1], reverse=True)
+    print('NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**')
+    for item in sortedNY:
+        print(item[0])
+
+
 if __name__ == '__main__':
     # listPosts, listClasses = loadDataSet()
     # myVocabList = createVocabList(listPosts)
@@ -236,4 +263,5 @@ if __name__ == '__main__':
 
     #testingNB()
     #spamTest()
-    testAd()
+    #testAd()
+    getTopWords()
