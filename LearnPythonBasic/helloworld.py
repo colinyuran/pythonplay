@@ -49,3 +49,20 @@ def foo(fun):
 @foo
 def bar():
     print("I am in bar()")
+
+# a = [1,2,3,4,5]
+# b = [9,8,7,6,5]
+
+# d = []
+
+# for x,y in zip(a,b):
+#     d.append(x+y)
+# print(d)
+
+# s = ['a','b','c','d']
+# for i,v in enumerate(s,1):
+#     print(i,v)
+
+f = open("130.txt")
+for line in f:
+    print(line, end='')
