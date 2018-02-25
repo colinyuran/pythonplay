@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
 
 def loadDataSet(fileName):
     dataMat = []
@@ -46,7 +49,7 @@ def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
                 clusterChanged = True
                 clusterAssment[i, :] = minIndex, minDist**2
 
-        print(centrodis)
+        # print(centrodis)
         for cent in range(k):
             ptsInClust = dataSet[np.nonzero(clusterAssment[:, 0].A == cent)[0]]
             centrodis[cent, :] = np.mean(ptsInClust, axis=0)
@@ -69,7 +72,7 @@ def biKmeans(dataSet, k, distMeas=distEclud):
             centroidMat , splitClustAss = kMeans(ptsIncurrCluster, 2, distMeas)
             sseSplit = np.sum(splitClustAss[:, 1])
             sseNotSplit = np.sum(clusterAssment[np.nonzero(clusterAssment[:, 0].A != i)[0], 1])
-            print('sseSplit, and notSplit:'.format(sseSplit, sseNotSplit))
+            print('sseSplit, and notSplit:{0} and {1}'.format(sseSplit, sseNotSplit))
 
             if (sseSplit + sseNotSplit) < lowestSSE:
                 bestCentToSplit = i
@@ -82,17 +85,48 @@ def biKmeans(dataSet, k, distMeas=distEclud):
         print('the bestCentToSplit is:{0}'.format(bestCentToSplit))
         print('the len of bestClustAss is:{0}'.format(len(bestClustAss)))
 
-        centList[bestCentToSplit] = bestNewCents[0,:]
-        centList.append(bestNewCents[1,:])
+        centList[bestCentToSplit] = bestNewCents[0,:].A[0]
+        centList.append(bestNewCents[1,:].A[0])
 
         clusterAssment[np.nonzero(clusterAssment[:, 0].A == bestCentToSplit)[0], :] = bestClustAss
 
-        return np.mat(centList), clusterAssment
+    return np.mat(centList), clusterAssment
+
+
+def distSLC(vecA, vecB):
+    a = np.sin(vecA[0,1] * np.pi / 180) * np.sin(vecB[0,1] * np.pi / 180)
+    b = np.cos(vecA[0,1] * np.pi / 180) * np.cos(vecB[0,1] * np.pi / 180) * np.cos(np.pi * (vecB[0,0] - vecA[0,0]) / 180)
+    return np.arccos(a + b) * 6371.0
+
+
+def clusterClubs(numClust = 5):
+    datList = []
+    for line in open('places.txt').readlines():
+        lineArr = line.split('\t')
+        datList.append([float(lineArr[4]), float(lineArr[3])])
+    
+    datMat = np.mat(datList)
+    myCentroids, clustAssing = biKmeans(datMat, numClust, distMeas=distSLC)
+    
+    fig = plt.figure()
+    rect = [0.1, 0.1, 0.8, 0.8]
+    scatterMarkers = ['s', 'o', '^', '8', 'p', 'd', 'v', 'h', '>', '<']
+    axprops = dict(xticks=[], yticks=[])
+    ax0 = fig.add_axes(rect, label='ax0', **axprops)
+    imgP = plt.imread('Portland.png')
+    ax0.imshow(imgP)
+    ax1 = fig.add_axes(rect, label='ax1', frameon = False)
+    for i in range(numClust):
+        ptsIncurrCluster = datMat[np.nonzero(clustAssing[:, 0].A == i)[0], :]
+        marketStyle = scatterMarkers[ i % len(scatterMarkers)]
+        ax1.scatter(myCentroids[:,0].flatten().A[0], myCentroids[:, 1].flatten().A[0], marker='+', s=300)
+    plt.show()
+
 
 
 
 if __name__ == '__main__':
-    datMat = np.mat(loadDataSet('testSet.txt'))    
+    # datMat = np.mat(loadDataSet('testSet.txt'))    
     # temp = randCent(datMat, 2)
 
     # print(np.min(datMat[:, 0]))
@@ -102,7 +136,12 @@ if __name__ == '__main__':
     # print(temp)
 
     # print(distEclud(datMat[0], datMat[1]))
-    myCentroids, clustAssing = kMeans(datMat, 4)
+    # myCentroids, clustAssing = kMeans(datMat, 4)
+    # datMat3 = np.mat(loadDataSet('testSet2.txt'))
+    # myCentroids, clusAssing = biKmeans(datMat3, 3)
+    # print(myCentroids)
+
+    clusterClubs(5)
 
 
 
